@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>History - Fraud Checker BD</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="View search history for courier fraud checking">
+    <meta name="keywords" content="fraud checker history, courier bd, search records">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=yes">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/static/logox.png">
+    <link rel="apple-touch-icon" href="/static/logox.png">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            background: #ffffff;
+            min-height: 100vh;
+            padding: 16px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        
+        /* Main Logo - Circular */
+        .main-logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .main-logo img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #000000;
+            background: white;
+        }
+        
+        /* Navigation with circular symbol logo */
+        .nav {
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            border-radius: 60px;
+            padding: 4px;
+            margin-bottom: 16px;
+            border: 1.5px solid #000000;
+            max-width: 300px;
+        }
+        
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 4px;
+        }
+        
+        .nav-logo img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid #000000;
+        }
+        
+        .nav-links {
+            display: flex;
+            flex: 1;
+            gap: 4px;
+            margin-left: 8px;
+        }
+        
+        .nav a {
+            flex: 1;
+            text-align: center;
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #000000;
+            transition: all 0.2s;
+        }
+        
+        .nav a.active {
+            background: #000000;
+            color: #ffffff;
+        }
+        
+        .card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 24px;
+            border: 1.5px solid #000000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .title-section img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid #000000;
+        }
+        
+        .title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #000000;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+            max-width: 350px;
+            flex-wrap: wrap;
+        }
+        
+        @media (max-width: 600px) {
+            .search-box {
+                max-width: 100%;
+            }
+        }
+        
+        .search-box input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 18px;
+            border: 2px solid #000000;
+            border-radius: 50px;
+            font-size: 14px;
+            background: #ffffff;
+            color: #000000;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: #000000;
+        }
+        
+        .search-box button {
+            padding: 12px 24px;
+            background: #000000;
+            color: #ffffff;
+            border: 2px solid #000000;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        
+        .search-box button:hover {
+            background: #333333;
+        }
+        
+        .badge {
+            background: #f5f5f5;
+            padding: 10px 18px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #666666;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1.5px solid #000000;
+            white-space: nowrap;
+        }
+        
+        .badge img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid #000000;
+        }
+        
+        .clear-search {
+            color: #666666;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 40px;
+            background: #f5f5f5;
+            border: 1.5px solid #000000;
+            white-space: nowrap;
+        }
+        
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 20px;
+            border: 1.5px solid #000000;
+            background: #ffffff;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+        
+        th {
+            text-align: left;
+            padding: 18px 20px;
+            background: #f5f5f5;
+            font-size: 13px;
+            font-weight: 700;
+            color: #000000;
+            text-transform: uppercase;
+            border-bottom: 2px solid #000000;
+        }
+        
+        td {
+            padding: 18px 20px;
+            border-bottom: 1px solid #000000;
+            vertical-align: middle;
+            background: #ffffff;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .phone {
+            font-weight: 700;
+            color: #000000;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .phone img {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid #000000;
+        }
+        
+        .provider-cell {
+            min-width: 220px;
+        }
+        
+        .provider-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .courier-logo {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid #000000;
+        }
+        
+        .provider-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #000000;
+            flex: 1;
+        }
+        
+        .rate-badge {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 30px;
+            border: 1.5px solid #000000;
+        }
+        
+        .rate-high {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border-color: #2e7d32;
+        }
+        
+        .rate-medium {
+            background: #fff3e0;
+            color: #b45b0a;
+            border-color: #b45b0a;
+        }
+        
+        .rate-low {
+            background: #ffebee;
+            color: #d32f2f;
+            border-color: #d32f2f;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 50px;
+        }
+        
+        .stat-value {
+            font-weight: 800;
+            font-size: 18px;
+            line-height: 1.2;
+        }
+        
+        .stat-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: #666666;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+        
+        .stat-success .stat-value { color: #2e7d32; }
+        .stat-cancel .stat-value { color: #d32f2f; }
+        .stat-total .stat-value { color: #000000; }
+        
+        .search-count {
+            background: #f5f5f5;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #666666;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1.5px solid #000000;
+        }
+        
+        .search-count img {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid #000000;
+        }
+        
+        .date {
+            font-size: 14px;
+            font-weight: 600;
+            color: #000000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .date img {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid #000000;
+        }
+        
+        .time {
+            font-size: 12px;
+            color: #666666;
+            margin-top: 6px;
+            margin-left: 28px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 24px;
+            color: #666666;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        
+        .footer-logos {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1.5px solid #000000;
+            flex-wrap: wrap;
+        }
+        
+        .footer-logos img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            opacity: 0.7;
+            transition: all 0.2s;
+            border: 1.5px solid #000000;
+        }
+        
+        .footer-logos img:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 600px) {
+            body { padding: 12px; }
+            .card { padding: 16px; }
+            .header { flex-direction: column; align-items: stretch; }
+            .title-section { justify-content: center; }
+            .badge { align-self: flex-start; }
+            th, td { padding: 12px; }
+            .stat-item { min-width: 40px; }
+            .stat-value { font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Main Logo - Circular -->
+        <div class="main-logo">
+            <img src="/static/logo.png" alt="Fraud Checker BD" onerror="this.style.display='none'">
+        </div>
+        
+        <!-- Navigation with circular symbol logo -->
+        <div class="nav">
+            <div class="nav-logo">
+                <img src="/static/logox.png" alt="FC" onerror="this.style.display='none'">
+            </div>
+            <div class="nav-links">
+                <a href="/">Check</a>
+                <a href="/history" class="active">History</a>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="header">
+                <div class="title-section">
+                    <img src="/static/logox.png" alt="" onerror="this.style.display='none'">
+                    <div class="title">Search History</div>
+                </div>
+                
+                <form class="search-box" method="get" action="/history">
+                    <input type="text" name="q" placeholder="Search phone number..." value="{{ search_query }}" inputmode="numeric">
+                    <button type="submit">Search</button>
+                    {% if search_query %}
+                        <a href="/history" class="clear-search">Clear</a>
+                    {% endif %}
+                </form>
+                
+                <span class="badge">
+                    <img src="/static/logox.png" alt="" onerror="this.style.display='none'">
+                    {{ searches|length }} records
+                </span>
+            </div>
+            
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Phone</th>
+                            <th>Pathao</th>
+                            <th>Steadfast</th>
+                            <th>Redx</th>
+                            <th>Searches</th>
+                            <th>Last Check</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in searches %}
+                        <tr>
+                            <td>
+                                <div class="phone">
+                                    <img src="/static/logox.png" alt="" onerror="this.style.display='none'">
+                                    {{ s.phone }}
+                                </div>
+                            </td>
+                            
+                            <td class="provider-cell">
+                                <div class="provider-header">
+                                    <img src="/static/pathao.png" class="courier-logo" alt="Pathao" onerror="this.style.display='none'">
+                                    <span class="provider-name">Pathao</span>
+                                    <span class="rate-badge 
+                                        {% if s.pathao.rate >= 80 %}rate-high
+                                        {% elif s.pathao.rate >= 50 %}rate-medium
+                                        {% else %}rate-low{% endif %}">
+                                        {{ s.pathao.rate }}%
+                                    </span>
+                                </div>
+                                <div class="stats">
+                                    <div class="stat-item stat-success">
+                                        <span class="stat-value">{{ s.pathao.success }}</span>
+                                        <span class="stat-label">S</span>
+                                    </div>
+                                    <div class="stat-item stat-cancel">
+                                        <span class="stat-value">{{ s.pathao.cancel }}</span>
+                                        <span class="stat-label">C</span>
+                                    </div>
+                                    <div class="stat-item stat-total">
+                                        <span class="stat-value">{{ s.pathao.total }}</span>
+                                        <span class="stat-label">T</span>
+                                    </div>
+                                </div>
+                            </td>
+                            
+                            <td class="provider-cell">
+                                <div class="provider-header">
+                                    <img src="/static/Steadfast.png" class="courier-logo" alt="Steadfast" onerror="this.style.display='none'">
+                                    <span class="provider-name">Steadfast</span>
+                                    <span class="rate-badge 
+                                        {% if s.steadfast.rate >= 80 %}rate-high
+                                        {% elif s.steadfast.rate >= 50 %}rate-medium
+                                        {% else %}rate-low{% endif %}">
+                                        {{ s.steadfast.rate }}%
+                                    </span>
+                                </div>
+                                <div class="stats">
+                                    <div class="stat-item stat-success">
+                                        <span class="stat-value">{{ s.steadfast.success }}</span>
+                                        <span class="stat-label">S</span>
+                                    </div>
+                                    <div class="stat-item stat-cancel">
+                                        <span class="stat-value">{{ s.steadfast.cancel }}</span>
+                                        <span class="stat-label">C</span>
+                                    </div>
+                                    <div class="stat-item stat-total">
+                                        <span class="stat-value">{{ s.steadfast.total }}</span>
+                                        <span class="stat-label">T</span>
+                                    </div>
+                                </div>
+                            </td>
+                            
+                            <td class="provider-cell">
+                                <div class="provider-header">
+                                    <img src="/static/redx.png" class="courier-logo" alt="Redx" onerror="this.style.display='none'">
+                                    <span class="provider-name">Redx</span>
+                                    <span class="rate-badge 
+                                        {% if s.redx.rate >= 80 %}rate-high
+                                        {% elif s.redx.rate >= 50 %}rate-medium
+                                        {% else %}rate-low{% endif %}">
+                                        {{ s.redx.rate }}%
+                                    </span>
+                                </div>
+                                <div class="stats">
+                                    <div class="stat-item stat-success">
+                                        <span class="stat-value">{{ s.redx.success }}</span>
+                                        <span class="stat-label">S</span>
+                                    </div>
+                                    <div class="stat-item stat-cancel">
+                                        <span class="stat-value">{{ s.redx.cancel }}</span>
+                                        <span class="stat-label">C</span>
+                                    </div>
+                                    <div class="stat-item stat-total">
+                                        <span class="stat-value">{{ s.redx.total }}</span>
+                                        <span class="stat-label">T</span>
+                                    </div>
+                                </div>
+                            </td>
+                            
+                            <td>
+                                <span class="search-count">
+                                    <img src="/static/logox.png" alt="" onerror="this.style.display='none'">
+                                    {{ s.count }}x
+                                </span>
+                            </td>
+                            
+                            <td>
+                                {% if s.updated %}
+                                    <div class="date">
+                                        <img src="/static/logox.png" alt="" onerror="this.style.display='none'">
+                                        {{ s.updated[:10] }}
+                                    </div>
+                                    <div class="time">{{ s.updated[11:16] }}</div>
+                                {% else %}
+                                    <span class="date">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="empty-state">
+                                {% if search_query %}
+                                    No results found for "{{ search_query }}"
+                                {% else %}
+                                    No search history available
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Footer logos -->
+            <div class="footer-logos">
+                <img src="/static/pathao.png" alt="Pathao" onerror="this.style.display='none'">
+                <img src="/static/Steadfast.png" alt="Steadfast" onerror="this.style.display='none'">
+                <img src="/static/redx.png" alt="Redx" onerror="this.style.display='none'">
+            </div>
+        </div>
+    </div>
+</body>
+</html>
